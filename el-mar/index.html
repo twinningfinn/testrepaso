@@ -113,7 +113,7 @@
       z-index: 20;
       top: 8px;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 8px;
       margin: 18px 0 26px;
       padding: 7px;
@@ -234,6 +234,26 @@
       background: linear-gradient(145deg, #ecfbff, #c7efff);
       font-size: 3.5rem;
       line-height: 1;
+      overflow: hidden;
+    }
+
+    .picture img,
+    .quiz-picture img,
+    .memory-back.picture-only img,
+    .choice-visual img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      object-fit: cover;
+    }
+
+    .picture img.contain,
+    .quiz-picture img.contain,
+    .memory-back.picture-only img.contain,
+    .choice-visual img.contain {
+      object-fit: contain;
+      background: #fff;
     }
 
     .word-card:nth-child(3n+2) .picture { background: linear-gradient(145deg, #fff8d8, #ffe38a); }
@@ -306,6 +326,7 @@
       background: linear-gradient(145deg, var(--aqua), #fff4bd);
       box-shadow: 0 12px 0 #c5e9f5;
       font-size: 6rem;
+      overflow: hidden;
     }
 
     .quiz-question {
@@ -343,6 +364,55 @@
       color: var(--sea-dark);
       text-align: center;
       font-weight: 950;
+    }
+
+    .image-body { padding: clamp(22px, 5vw, 38px); }
+
+    .image-prompt {
+      margin: 0 0 22px;
+      color: var(--red);
+      text-align: center;
+      font-size: clamp(1.6rem, 5vw, 2.35rem);
+      font-weight: 950;
+    }
+
+    .image-prompt .tiny {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+    }
+
+    .image-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .image-option {
+      min-height: 184px;
+      padding: 10px;
+      border: 3px solid var(--line);
+      border-radius: 24px;
+      background: #fff;
+      cursor: pointer;
+      box-shadow: 0 7px 0 #d8edf5;
+      transition: transform .16s ease, border-color .16s ease;
+    }
+
+    .image-option:hover { border-color: var(--sea); transform: translateY(-2px); }
+    .image-option.correct { border-color: #48a868; background: var(--mint); box-shadow: 0 7px 0 #a9ddba; }
+    .image-option.wrong { border-color: #ef6b82; background: var(--pink); box-shadow: 0 7px 0 #f3b6c2; }
+
+    .choice-visual {
+      display: grid;
+      width: 100%;
+      height: 160px;
+      overflow: hidden;
+      place-items: center;
+      border-radius: 17px;
+      background: linear-gradient(145deg, var(--aqua), #fff4bd);
+      font-size: 5.2rem;
+      line-height: 1;
     }
 
     .finish {
@@ -446,7 +516,7 @@
       font-weight: 950;
     }
 
-    .memory-back.picture-only { font-size: 3.7rem; }
+    .memory-back.picture-only { overflow: hidden; font-size: 3.7rem; }
     .memory-card.matched .memory-back { background: var(--mint); }
 
     .memory-done {
@@ -501,6 +571,10 @@
       .memory-card { min-height: 104px; }
       .memory-back { font-size: .88rem; }
       .memory-back.picture-only { font-size: 3rem; }
+      .tabs { grid-template-columns: repeat(2, 1fr); }
+      .image-options { gap: 10px; }
+      .image-option { min-height: 138px; padding: 7px; border-radius: 19px; }
+      .choice-visual { height: 120px; border-radius: 13px; font-size: 4rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -511,7 +585,7 @@
 <body>
   <main class="shell">
     <header class="hero">
-      <p class="eyebrow">Gente 8 • Vocabulario</p>
+      <p class="eyebrow">Vocabulario • Ord • Sánit</p>
       <h1>EL MAR</h1>
       <p class="hero-copy">
         Palabras, imágenes y juegos cortos.
@@ -528,6 +602,9 @@
       </button>
       <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="memory" data-view="memory">
         🎴 Memoria <small>Hukommelse • Muitu</small>
+      </button>
+      <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="imageGame" data-view="imageGame">
+        🎯 Imagen <small>Bilde • Govva</small>
       </button>
     </nav>
 
@@ -570,6 +647,16 @@
       </div>
     </section>
 
+    <section class="view" id="imageGame" role="tabpanel" hidden>
+      <div class="section-head">
+        <div>
+          <h2>Busca la imagen</h2>
+          <p class="instruction">Elige la imagen correcta. <span class="tiny">Velg riktig bilde. • Vállje rivttes gova.</span></p>
+        </div>
+      </div>
+      <div class="game-panel" id="imagePanel"></div>
+    </section>
+
     <footer>Español • Norsk • Davvisámegiella</footer>
   </main>
 
@@ -579,20 +666,23 @@
       { id: "playa", es: "la playa", no: "strand", se: "gáddi", icon: "🏖️", group: "places" },
       { id: "costa", es: "la costa", no: "kyst", se: "mearragáddi", icon: "🌅", group: "places" },
       { id: "isla", es: "la isla", no: "øy", se: "suolu", icon: "🏝️", group: "places" },
-      { id: "puerto", es: "el puerto", no: "havn", se: "hápman", icon: "⚓", group: "places" },
+      // Foto CC0: publicdomainpictures.net/en/view-image.php?image=54776&picture=boats-in-the-harbour
+      { id: "puerto", es: "el puerto", no: "havn", se: "hápman", image: "assets/puerto.webp", group: "places" },
       { id: "agua", es: "el agua", no: "vann", se: "čáhci", icon: "💧", group: "places" },
       { id: "barco", es: "el barco", no: "båt", se: "fanas", icon: "⛵", group: "boat" },
       { id: "chaleco", es: "el chaleco salvavidas", no: "redningsvest", se: "gádjunliiva", icon: "🦺", group: "boat" },
       { id: "cuerda", es: "la cuerda", no: "tau", se: "báddi", icon: "🪢", group: "boat" },
       { id: "remo", es: "el remo", no: "åre", se: "áiru", icon: "🛶", group: "boat" },
-      { id: "muelle", es: "el muelle", no: "brygge", se: "brugga", icon: "🪵", group: "boat" },
+      // Foto CC0: publicdomainpictures.net/en/view-image.php?image=310109&picture=pier
+      { id: "muelle", es: "el muelle", no: "brygge", se: "brugga", image: "assets/muelle.webp", group: "boat" },
       { id: "sol", es: "el sol", no: "sol", se: "beaivi", icon: "☀️", group: "weather" },
       { id: "nube", es: "la nube", no: "sky", se: "balva", icon: "☁️", group: "weather" },
       { id: "lluvia", es: "la lluvia", no: "regn", se: "arvi", icon: "🌧️", group: "weather" },
       { id: "viento", es: "el viento", no: "vind", se: "biegga", icon: "💨", group: "weather" },
       { id: "ola", es: "la ola", no: "bølge", se: "bárru", icon: "🌊", group: "weather" },
       { id: "pez", es: "el pez", no: "fisk", se: "guolli", icon: "🐟", group: "life" },
-      { id: "gaviota", es: "la gaviota", no: "måke", se: "skávhli", icon: "🐦", group: "life" },
+      // Foto CC0: publicdomainpictures.net/en/view-image.php?image=49196&picture=seagull
+      { id: "gaviota", es: "la gaviota", no: "måke", se: "skávhli", image: "assets/gaviota.webp", fit: "contain", group: "life" },
       { id: "cangrejo", es: "el cangrejo", no: "krabbe", se: "reabbá", icon: "🦀", group: "life" },
       { id: "concha", es: "la concha", no: "skjell", se: "skálžu", icon: "🐚", group: "life" },
       { id: "pescar", es: "pescar", no: "å fiske", se: "guolástit", icon: "🎣", group: "life" },
@@ -619,7 +709,12 @@
       memoryOpen: [],
       memoryPairs: 0,
       memoryMoves: 0,
-      memoryLocked: false
+      memoryLocked: false,
+      imageQuiz: [],
+      imageIndex: 0,
+      imageScore: 0,
+      imageStreak: 0,
+      imageLocked: false
     };
 
     const shuffle = items => {
@@ -632,6 +727,13 @@
     };
 
     const sample = (items, count) => shuffle(items).slice(0, count);
+
+    function wordVisual(word) {
+      if (word.image) {
+        return `<img src="${word.image}" alt="" class="${word.fit === "contain" ? "contain" : ""}">`;
+      }
+      return `<span aria-hidden="true">${word.icon}</span>`;
+    }
 
     function renderFilters() {
       const filters = document.getElementById("filters");
@@ -655,7 +757,7 @@
       const grid = document.getElementById("wordGrid");
       grid.innerHTML = visible.map(word => `
         <article class="word-card">
-          <div class="picture" aria-hidden="true">${word.icon}</div>
+          <div class="picture" aria-hidden="true">${wordVisual(word)}</div>
           <h3 class="es">${word.es}</h3>
           <p class="translations">${word.no}<br><strong>${word.se}</strong></p>
         </article>
@@ -671,6 +773,7 @@
       });
       if (viewId === "quiz" && !state.quiz.length) startQuiz();
       if (viewId === "memory" && !state.memoryCards.length) startMemory();
+      if (viewId === "imageGame" && !state.imageQuiz.length) startImageQuiz();
       window.scrollTo({ top: document.querySelector(".tabs").offsetTop - 8, behavior: "smooth" });
     }
 
@@ -712,7 +815,7 @@
           <span>⭐ ${state.quizScore}</span>
         </div>
         <div class="quiz-body">
-          <div class="quiz-picture pop" aria-hidden="true">${question.answer.icon}</div>
+          <div class="quiz-picture pop" aria-hidden="true">${wordVisual(question.answer)}</div>
           <p class="quiz-question">¿Cómo se dice en español?<br><span class="tiny">Hva heter det på spansk? • Mii dát lea spánskagillii?</span></p>
           <div class="options">
             ${question.options.map(option => `<button class="option" type="button" data-answer="${option.id}">${option.es}</button>`).join("")}
@@ -750,7 +853,7 @@
     function startMemory() {
       const selected = sample(WORDS, 6);
       state.memoryCards = shuffle(selected.flatMap(word => [
-        { key: `${word.id}-picture`, pair: word.id, kind: "picture", content: word.icon },
+        { key: `${word.id}-picture`, pair: word.id, kind: "picture", word },
         { key: `${word.id}-word`, pair: word.id, kind: "word", content: word.es }
       ]));
       state.memoryOpen = [];
@@ -767,7 +870,7 @@
         <button class="memory-card" type="button" data-key="${card.key}" aria-label="Abrir tarjeta">
           <span class="memory-inner">
             <span class="memory-front" aria-hidden="true">?</span>
-            <span class="memory-back ${card.kind === "picture" ? "picture-only" : ""}">${card.content}</span>
+            <span class="memory-back ${card.kind === "picture" ? "picture-only" : ""}">${card.kind === "picture" ? wordVisual(card.word) : card.content}</span>
           </span>
         </button>
       `).join("");
@@ -817,6 +920,79 @@
         <button class="primary" type="button" id="restartMemory">Otra ronda • Ny runde • Ođđa vuorru</button>
       `;
       document.getElementById("restartMemory").addEventListener("click", startMemory);
+    }
+
+    function startImageQuiz() {
+      state.imageQuiz = sample(WORDS, 8).map(makeQuestion);
+      state.imageIndex = 0;
+      state.imageScore = 0;
+      state.imageStreak = 0;
+      state.imageLocked = false;
+      renderImageQuiz();
+    }
+
+    function renderImageQuiz() {
+      const panel = document.getElementById("imagePanel");
+      if (state.imageIndex >= state.imageQuiz.length) {
+        const prize = state.imageScore === 8 ? "🏆" : state.imageScore >= 6 ? "⭐" : "🎯";
+        panel.innerHTML = `
+          <div class="finish pop">
+            <div class="finish-emoji">${prize}</div>
+            <h3>¡Reto completo!</h3>
+            <p><strong>${state.imageScore} / ${state.imageQuiz.length}</strong></p>
+            <p class="tiny">Utfordring fullført! • Hástalus geargan!</p>
+            <button class="primary" type="button" id="restartImage">Otra ronda • Ny runde • Ođđa vuorru</button>
+          </div>
+        `;
+        document.getElementById("restartImage").addEventListener("click", startImageQuiz);
+        return;
+      }
+
+      const question = state.imageQuiz[state.imageIndex];
+      panel.innerHTML = `
+        <div class="game-top">
+          <span>${state.imageIndex + 1} / ${state.imageQuiz.length}</span>
+          <div class="progress-track" aria-hidden="true"><div class="progress-bar" style="width:${(state.imageIndex / state.imageQuiz.length) * 100}%"></div></div>
+          <span>🔥 ${state.imageStreak}</span>
+        </div>
+        <div class="image-body">
+          <p class="image-prompt">${question.answer.es}<span class="tiny">Encuentra la imagen • Finn bildet • Gávnna gova</span></p>
+          <div class="image-options">
+            ${question.options.map((option, index) => `
+              <button class="image-option" type="button" data-image-answer="${option.id}" aria-label="Imagen ${index + 1}">
+                <span class="choice-visual">${wordVisual(option)}</span>
+              </button>
+            `).join("")}
+          </div>
+          <p class="feedback" id="imageFeedback" aria-live="polite"></p>
+        </div>
+      `;
+
+      panel.querySelectorAll("[data-image-answer]").forEach(button => {
+        button.addEventListener("click", () => checkImageAnswer(button, question.answer));
+      });
+    }
+
+    function checkImageAnswer(button, answer) {
+      if (state.imageLocked) return;
+      state.imageLocked = true;
+      const isCorrect = button.dataset.imageAnswer === answer.id;
+      button.classList.add(isCorrect ? "correct" : "wrong");
+      if (isCorrect) {
+        state.imageScore += 1;
+        state.imageStreak += 1;
+      } else {
+        state.imageStreak = 0;
+        document.querySelector(`[data-image-answer="${answer.id}"]`).classList.add("correct");
+      }
+      document.getElementById("imageFeedback").textContent = isCorrect
+        ? `¡Sí! 🔥 ${state.imageStreak}`
+        : `${answer.es} • ${answer.no} • ${answer.se}`;
+      window.setTimeout(() => {
+        state.imageIndex += 1;
+        state.imageLocked = false;
+        renderImageQuiz();
+      }, 1000);
     }
 
     document.querySelectorAll(".tab").forEach(tab => {
