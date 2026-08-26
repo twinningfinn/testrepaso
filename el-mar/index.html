@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffb703">
+  <meta name="description" content="Vocabulario del mar en español, noruego y sami del norte con juegos cortos.">
+  <title>El mar - palabras y juegos</title>
+  <style>
+    :root {
+      --ink: #102a43;
+      --muted: #5b6b7a;
+      --paper: #fffaf0;
+      --card: #ffffff;
+      --yellow: #ffd65a;
+      --orange: #ff9f1c;
+      --red: #c62828;
+      --sea: #0077b6;
+      --sea-dark: #075985;
+      --aqua: #dff6ff;
+      --mint: #dff8e8;
+      --pink: #ffe5ec;
+      --line: #c9e6f2;
+      --shadow: 0 14px 34px rgba(16, 42, 67, .12);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 4%, rgba(255, 214, 90, .46), transparent 28rem),
+        linear-gradient(180deg, #fffaf0 0%, #eefaff 48%, #fffaf0 100%);
+      font-family: Inter, ui-rounded, "Arial Rounded MT Bold", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 17px;
+      line-height: 1.45;
+    }
+
+    button { font: inherit; }
+
+    button:focus-visible {
+      outline: 4px solid rgba(0, 119, 182, .25);
+      outline-offset: 3px;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 20px 0 48px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(24px, 5vw, 48px);
+      border: 2px solid rgba(255, 159, 28, .38);
+      border-radius: 34px;
+      background: linear-gradient(125deg, var(--yellow), #ffe9a3 58%, #dff6ff 58%);
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "🌊  🐟  🦀";
+      position: absolute;
+      right: clamp(18px, 6vw, 64px);
+      bottom: clamp(12px, 3vw, 28px);
+      font-size: clamp(34px, 7vw, 72px);
+      letter-spacing: .08em;
+      filter: drop-shadow(0 7px 0 rgba(0, 119, 182, .12));
+      transform: rotate(-3deg);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      margin: 0 0 5px;
+      color: var(--red);
+      font-size: .82rem;
+      font-weight: 900;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 560px;
+      margin: 0;
+      font-size: clamp(3rem, 9vw, 6.2rem);
+      line-height: .95;
+      letter-spacing: -.055em;
+    }
+
+    .hero-copy {
+      max-width: 570px;
+      margin: 16px 0 0;
+      color: var(--sea-dark);
+      font-weight: 750;
+    }
+
+    .hero-copy span { display: block; }
+
+    .tiny {
+      color: var(--muted);
+      font-size: .83rem;
+      font-weight: 650;
+    }
+
+    .tabs {
+      position: sticky;
+      z-index: 20;
+      top: 8px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 18px 0 26px;
+      padding: 7px;
+      border: 1px solid rgba(16, 42, 67, .1);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, .88);
+      box-shadow: 0 8px 22px rgba(16, 42, 67, .1);
+      backdrop-filter: blur(14px);
+    }
+
+    .tab {
+      min-height: 58px;
+      padding: 8px 10px;
+      border: 0;
+      border-radius: 16px;
+      color: var(--ink);
+      background: transparent;
+      cursor: pointer;
+      font-weight: 900;
+      transition: transform .16s ease, background .16s ease, color .16s ease;
+    }
+
+    .tab:hover { transform: translateY(-1px); }
+
+    .tab[aria-selected="true"] {
+      color: #fff;
+      background: var(--sea);
+      box-shadow: 0 7px 0 var(--sea-dark);
+    }
+
+    .tab small {
+      display: block;
+      margin-top: 1px;
+      font-size: .67rem;
+      font-weight: 700;
+      opacity: .86;
+    }
+
+    .view[hidden] { display: none; }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 0 3px 18px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(1.7rem, 4vw, 2.55rem);
+      line-height: 1.08;
+      letter-spacing: -.035em;
+    }
+
+    .instruction {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin: 0 -2px 20px;
+      padding: 2px 2px 9px;
+      scrollbar-width: thin;
+    }
+
+    .chip {
+      flex: none;
+      min-height: 44px;
+      padding: 9px 15px;
+      border: 2px solid var(--line);
+      border-radius: 999px;
+      color: var(--sea-dark);
+      background: #fff;
+      cursor: pointer;
+      font-weight: 850;
+    }
+
+    .chip.active {
+      border-color: var(--orange);
+      color: #5f3300;
+      background: var(--yellow);
+    }
+
+    .word-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .word-card {
+      position: relative;
+      min-height: 260px;
+      padding: 20px 18px 18px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: 0 9px 0 rgba(7, 89, 133, .08);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .word-card:hover {
+      transform: translateY(-3px) rotate(-.25deg);
+      box-shadow: 0 13px 0 rgba(7, 89, 133, .1);
+    }
+
+    .picture {
+      display: grid;
+      width: 92px;
+      height: 92px;
+      margin: 0 auto 14px;
+      place-items: center;
+      border-radius: 28px;
+      background: linear-gradient(145deg, #ecfbff, #c7efff);
+      font-size: 3.5rem;
+      line-height: 1;
+    }
+
+    .word-card:nth-child(3n+2) .picture { background: linear-gradient(145deg, #fff8d8, #ffe38a); }
+    .word-card:nth-child(3n) .picture { background: linear-gradient(145deg, #ecffef, #c9f1d2); }
+
+    .es {
+      margin: 0;
+      color: var(--red);
+      font-size: 1.15rem;
+      font-weight: 950;
+      line-height: 1.14;
+      text-align: center;
+    }
+
+    .translations {
+      margin: 12px 0 0;
+      padding-top: 11px;
+      border-top: 1px solid var(--line);
+      text-align: center;
+    }
+
+    .translations strong { color: var(--sea-dark); }
+
+    .game-panel {
+      overflow: hidden;
+      max-width: 760px;
+      margin: 0 auto;
+      border: 2px solid var(--line);
+      border-radius: 30px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .game-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      background: var(--yellow);
+      font-weight: 900;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 12px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, .68);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--sea);
+      transition: width .22s ease;
+    }
+
+    .quiz-body { padding: clamp(22px, 5vw, 42px); }
+
+    .quiz-picture {
+      display: grid;
+      width: 152px;
+      height: 152px;
+      margin: 0 auto 12px;
+      place-items: center;
+      border: 3px solid #fff;
+      border-radius: 42px;
+      background: linear-gradient(145deg, var(--aqua), #fff4bd);
+      box-shadow: 0 12px 0 #c5e9f5;
+      font-size: 6rem;
+    }
+
+    .quiz-question {
+      margin: 22px 0 20px;
+      text-align: center;
+      font-size: 1.22rem;
+      font-weight: 900;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .option {
+      min-height: 68px;
+      padding: 12px 14px;
+      border: 2px solid var(--line);
+      border-radius: 18px;
+      color: var(--ink);
+      background: #fff;
+      cursor: pointer;
+      font-weight: 900;
+      box-shadow: 0 6px 0 #d8edf5;
+    }
+
+    .option:hover { border-color: var(--sea); }
+    .option.correct { border-color: #48a868; background: var(--mint); box-shadow: 0 6px 0 #a9ddba; }
+    .option.wrong { border-color: #ef6b82; background: var(--pink); box-shadow: 0 6px 0 #f3b6c2; }
+
+    .feedback {
+      min-height: 34px;
+      margin: 18px 0 0;
+      color: var(--sea-dark);
+      text-align: center;
+      font-weight: 950;
+    }
+
+    .finish {
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .finish-emoji { font-size: 5rem; }
+    .finish h3 { margin: 6px 0; font-size: 2rem; }
+
+    .primary {
+      min-height: 52px;
+      margin-top: 18px;
+      padding: 11px 20px;
+      border: 0;
+      border-radius: 16px;
+      color: #fff;
+      background: var(--sea);
+      cursor: pointer;
+      font-weight: 950;
+      box-shadow: 0 7px 0 var(--sea-dark);
+    }
+
+    .primary:active { transform: translateY(4px); box-shadow: 0 3px 0 var(--sea-dark); }
+
+    .memory-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .memory-status {
+      display: flex;
+      justify-content: center;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin: 0 0 16px;
+    }
+
+    .stat {
+      padding: 8px 14px;
+      border: 2px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      font-weight: 850;
+    }
+
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .memory-card {
+      position: relative;
+      min-height: 128px;
+      padding: 0;
+      border: 0;
+      border-radius: 20px;
+      background: transparent;
+      cursor: pointer;
+      perspective: 900px;
+    }
+
+    .memory-inner {
+      position: absolute;
+      inset: 0;
+      border: 2px solid var(--line);
+      border-radius: inherit;
+      box-shadow: 0 7px 0 #c9e6f2;
+      transform-style: preserve-3d;
+      transition: transform .32s ease;
+    }
+
+    .memory-card.flipped .memory-inner,
+    .memory-card.matched .memory-inner { transform: rotateY(180deg); }
+
+    .memory-front,
+    .memory-back {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 10px;
+      border-radius: inherit;
+      backface-visibility: hidden;
+    }
+
+    .memory-front {
+      color: #fff;
+      background: linear-gradient(145deg, var(--sea), var(--sea-dark));
+      font-size: 2.5rem;
+      font-weight: 950;
+    }
+
+    .memory-back {
+      color: var(--red);
+      background: #fff;
+      transform: rotateY(180deg);
+      text-align: center;
+      font-size: 1.08rem;
+      font-weight: 950;
+    }
+
+    .memory-back.picture-only { font-size: 3.7rem; }
+    .memory-card.matched .memory-back { background: var(--mint); }
+
+    .memory-done {
+      margin-top: 20px;
+      padding: 22px;
+      border: 2px solid #9bd2ae;
+      border-radius: 22px;
+      background: var(--mint);
+      text-align: center;
+      font-weight: 900;
+    }
+
+    footer {
+      margin-top: 42px;
+      color: var(--muted);
+      text-align: center;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    .pop { animation: pop .32s ease; }
+
+    @keyframes pop {
+      0% { transform: scale(.92); }
+      70% { transform: scale(1.04); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 840px) {
+      .word-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero::after { opacity: .55; }
+    }
+
+    @media (max-width: 540px) {
+      body { font-size: 16px; }
+      .shell { width: min(100% - 18px, 1120px); padding-top: 9px; }
+      .hero { min-height: 230px; padding: 24px 22px; border-radius: 27px; background: linear-gradient(155deg, var(--yellow), #ffeba9 68%, #dff6ff 68%); }
+      .hero-copy { max-width: 80%; }
+      .hero::after { right: 14px; bottom: 13px; font-size: 42px; }
+      .tabs { top: 5px; margin-top: 10px; }
+      .tab { min-height: 54px; padding-inline: 4px; font-size: .86rem; }
+      .tab small { font-size: .6rem; }
+      .section-head { align-items: start; flex-direction: column; }
+      .word-grid { gap: 10px; }
+      .word-card { min-height: 238px; padding: 17px 10px 14px; border-radius: 20px; }
+      .picture { width: 80px; height: 80px; font-size: 3rem; }
+      .es { font-size: 1rem; }
+      .translations { font-size: .87rem; }
+      .options { grid-template-columns: 1fr; }
+      .quiz-picture { width: 132px; height: 132px; font-size: 5.2rem; }
+      .memory-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+      .memory-card { min-height: 104px; }
+      .memory-back { font-size: .88rem; }
+      .memory-back.picture-only { font-size: 3rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <p class="eyebrow">Gente 8 • Vocabulario</p>
+      <h1>EL MAR</h1>
+      <p class="hero-copy">
+        Palabras, imágenes y juegos cortos.
+        <span class="tiny">Ord, bilder og korte spill. • Sánit, govat ja oanehis spealut.</span>
+      </p>
+    </header>
+
+    <nav class="tabs" aria-label="Secciones">
+      <button class="tab" type="button" role="tab" aria-selected="true" aria-controls="words" data-view="words">
+        🧠 Palabras <small>Ord • Sánit</small>
+      </button>
+      <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="quiz" data-view="quiz">
+        ⚡ Quiz <small>10 preguntas</small>
+      </button>
+      <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="memory" data-view="memory">
+        🎴 Memoria <small>Hukommelse • Muitu</small>
+      </button>
+    </nav>
+
+    <section class="view" id="words" role="tabpanel">
+      <div class="section-head">
+        <div>
+          <h2>Palabras del mar</h2>
+          <p class="instruction">Mira, lee y repite. <span class="tiny">Se, les og gjenta. • Geahča, loga ja gearddut.</span></p>
+        </div>
+        <div class="stat" id="wordCount">24 palabras</div>
+      </div>
+      <div class="filters" id="filters" aria-label="Categorías"></div>
+      <div class="word-grid" id="wordGrid"></div>
+    </section>
+
+    <section class="view" id="quiz" role="tabpanel" hidden>
+      <div class="section-head">
+        <div>
+          <h2>Quiz rápido</h2>
+          <p class="instruction">Elige la palabra correcta. <span class="tiny">Velg riktig ord. • Vállje rivttes sáni.</span></p>
+        </div>
+      </div>
+      <div class="game-panel" id="quizPanel"></div>
+    </section>
+
+    <section class="view" id="memory" role="tabpanel" hidden>
+      <div class="section-head">
+        <div>
+          <h2>Memoria</h2>
+          <p class="instruction">Une la imagen con la palabra. <span class="tiny">Koble bildet til ordet. • Ovttasta gova ja sáni.</span></p>
+        </div>
+      </div>
+      <div class="memory-wrap">
+        <div class="memory-status">
+          <div class="stat" id="pairsStat">0 / 6 pares</div>
+          <div class="stat" id="movesStat">0 intentos</div>
+        </div>
+        <div class="memory-grid" id="memoryGrid"></div>
+        <div class="memory-done" id="memoryDone" hidden></div>
+      </div>
+    </section>
+
+    <footer>Español • Norsk • Davvisámegiella</footer>
+  </main>
+
+  <script>
+    const WORDS = [
+      { id: "mar", es: "el mar", no: "hav / sjø", se: "mearra", icon: "🌊🐟", group: "places" },
+      { id: "playa", es: "la playa", no: "strand", se: "gáddi", icon: "🏖️", group: "places" },
+      { id: "costa", es: "la costa", no: "kyst", se: "mearragáddi", icon: "🌅", group: "places" },
+      { id: "isla", es: "la isla", no: "øy", se: "suolu", icon: "🏝️", group: "places" },
+      { id: "puerto", es: "el puerto", no: "havn", se: "hápman", icon: "⚓", group: "places" },
+      { id: "agua", es: "el agua", no: "vann", se: "čáhci", icon: "💧", group: "places" },
+      { id: "barco", es: "el barco", no: "båt", se: "fanas", icon: "⛵", group: "boat" },
+      { id: "chaleco", es: "el chaleco salvavidas", no: "redningsvest", se: "gádjunliiva", icon: "🦺", group: "boat" },
+      { id: "cuerda", es: "la cuerda", no: "tau", se: "báddi", icon: "🪢", group: "boat" },
+      { id: "remo", es: "el remo", no: "åre", se: "áiru", icon: "🛶", group: "boat" },
+      { id: "muelle", es: "el muelle", no: "brygge", se: "brugga", icon: "🪵", group: "boat" },
+      { id: "sol", es: "el sol", no: "sol", se: "beaivi", icon: "☀️", group: "weather" },
+      { id: "nube", es: "la nube", no: "sky", se: "balva", icon: "☁️", group: "weather" },
+      { id: "lluvia", es: "la lluvia", no: "regn", se: "arvi", icon: "🌧️", group: "weather" },
+      { id: "viento", es: "el viento", no: "vind", se: "biegga", icon: "💨", group: "weather" },
+      { id: "ola", es: "la ola", no: "bølge", se: "bárru", icon: "🌊", group: "weather" },
+      { id: "pez", es: "el pez", no: "fisk", se: "guolli", icon: "🐟", group: "life" },
+      { id: "gaviota", es: "la gaviota", no: "måke", se: "skávhli", icon: "🐦", group: "life" },
+      { id: "cangrejo", es: "el cangrejo", no: "krabbe", se: "reabbá", icon: "🦀", group: "life" },
+      { id: "concha", es: "la concha", no: "skjell", se: "skálžu", icon: "🐚", group: "life" },
+      { id: "pescar", es: "pescar", no: "å fiske", se: "guolástit", icon: "🎣", group: "life" },
+      { id: "remar", es: "remar", no: "å ro", se: "suhkat", icon: "🚣", group: "life" },
+      { id: "nadar", es: "nadar", no: "å svømme", se: "vuodjat", icon: "🏊", group: "life" },
+      { id: "navegar", es: "navegar", no: "å seile", se: "borjjastit", icon: "🚤", group: "life" }
+    ];
+
+    const GROUPS = [
+      { id: "all", label: "Todos", sub: "Alle • Buohkat" },
+      { id: "places", label: "Lugares", sub: "Steder • Báikkit" },
+      { id: "boat", label: "Barco", sub: "Båt • Fanas" },
+      { id: "weather", label: "Tiempo", sub: "Vær • Dálki" },
+      { id: "life", label: "Animales + acciones", sub: "Dyr + aktiviteter • Eallit + doaimmat" }
+    ];
+
+    const state = {
+      filter: "all",
+      quiz: [],
+      quizIndex: 0,
+      quizScore: 0,
+      quizLocked: false,
+      memoryCards: [],
+      memoryOpen: [],
+      memoryPairs: 0,
+      memoryMoves: 0,
+      memoryLocked: false
+    };
+
+    const shuffle = items => {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    };
+
+    const sample = (items, count) => shuffle(items).slice(0, count);
+
+    function renderFilters() {
+      const filters = document.getElementById("filters");
+      filters.innerHTML = GROUPS.map(group => `
+        <button class="chip ${state.filter === group.id ? "active" : ""}" type="button" data-filter="${group.id}">
+          ${group.label} <span class="tiny">${group.sub}</span>
+        </button>
+      `).join("");
+      filters.querySelectorAll("[data-filter]").forEach(button => {
+        button.addEventListener("click", () => {
+          state.filter = button.dataset.filter;
+          renderFilters();
+          renderWords();
+        });
+      });
+    }
+
+    function renderWords() {
+      const visible = state.filter === "all" ? WORDS : WORDS.filter(word => word.group === state.filter);
+      document.getElementById("wordCount").textContent = `${visible.length} palabras`;
+      const grid = document.getElementById("wordGrid");
+      grid.innerHTML = visible.map(word => `
+        <article class="word-card">
+          <div class="picture" aria-hidden="true">${word.icon}</div>
+          <h3 class="es">${word.es}</h3>
+          <p class="translations">${word.no}<br><strong>${word.se}</strong></p>
+        </article>
+      `).join("");
+    }
+
+    function switchView(viewId) {
+      document.querySelectorAll(".tab").forEach(tab => {
+        tab.setAttribute("aria-selected", String(tab.dataset.view === viewId));
+      });
+      document.querySelectorAll(".view").forEach(view => {
+        view.hidden = view.id !== viewId;
+      });
+      if (viewId === "quiz" && !state.quiz.length) startQuiz();
+      if (viewId === "memory" && !state.memoryCards.length) startMemory();
+      window.scrollTo({ top: document.querySelector(".tabs").offsetTop - 8, behavior: "smooth" });
+    }
+
+    function makeQuestion(answer) {
+      const wrong = sample(WORDS.filter(word => word.id !== answer.id), 3);
+      return { answer, options: shuffle([answer, ...wrong]) };
+    }
+
+    function startQuiz() {
+      state.quiz = sample(WORDS, 10).map(makeQuestion);
+      state.quizIndex = 0;
+      state.quizScore = 0;
+      state.quizLocked = false;
+      renderQuiz();
+    }
+
+    function renderQuiz() {
+      const panel = document.getElementById("quizPanel");
+      if (state.quizIndex >= state.quiz.length) {
+        const stars = state.quizScore >= 9 ? "🏆" : state.quizScore >= 7 ? "⭐" : "🌊";
+        panel.innerHTML = `
+          <div class="finish pop">
+            <div class="finish-emoji">${stars}</div>
+            <h3>¡Muy bien!</h3>
+            <p><strong>${state.quizScore} / ${state.quiz.length}</strong></p>
+            <p class="tiny">Kjempebra! • Hui bures!</p>
+            <button class="primary" type="button" id="restartQuiz">Otra ronda • Ny runde • Ođđa vuorru</button>
+          </div>
+        `;
+        document.getElementById("restartQuiz").addEventListener("click", startQuiz);
+        return;
+      }
+
+      const question = state.quiz[state.quizIndex];
+      panel.innerHTML = `
+        <div class="game-top">
+          <span>${state.quizIndex + 1} / ${state.quiz.length}</span>
+          <div class="progress-track" aria-hidden="true"><div class="progress-bar" style="width:${(state.quizIndex / state.quiz.length) * 100}%"></div></div>
+          <span>⭐ ${state.quizScore}</span>
+        </div>
+        <div class="quiz-body">
+          <div class="quiz-picture pop" aria-hidden="true">${question.answer.icon}</div>
+          <p class="quiz-question">¿Cómo se dice en español?<br><span class="tiny">Hva heter det på spansk? • Mii dát lea spánskagillii?</span></p>
+          <div class="options">
+            ${question.options.map(option => `<button class="option" type="button" data-answer="${option.id}">${option.es}</button>`).join("")}
+          </div>
+          <p class="feedback" id="quizFeedback" aria-live="polite"></p>
+        </div>
+      `;
+
+      panel.querySelectorAll("[data-answer]").forEach(button => {
+        button.addEventListener("click", () => checkQuizAnswer(button, question.answer));
+      });
+    }
+
+    function checkQuizAnswer(button, answer) {
+      if (state.quizLocked) return;
+      state.quizLocked = true;
+      const isCorrect = button.dataset.answer === answer.id;
+      button.classList.add(isCorrect ? "correct" : "wrong");
+      if (!isCorrect) {
+        const correctButton = document.querySelector(`[data-answer="${answer.id}"]`);
+        correctButton.classList.add("correct");
+      } else {
+        state.quizScore += 1;
+      }
+      document.getElementById("quizFeedback").textContent = isCorrect
+        ? "¡Sí! • Riktig! • Riekta!"
+        : `${answer.es} • ${answer.no} • ${answer.se}`;
+      window.setTimeout(() => {
+        state.quizIndex += 1;
+        state.quizLocked = false;
+        renderQuiz();
+      }, 950);
+    }
+
+    function startMemory() {
+      const selected = sample(WORDS, 6);
+      state.memoryCards = shuffle(selected.flatMap(word => [
+        { key: `${word.id}-picture`, pair: word.id, kind: "picture", content: word.icon },
+        { key: `${word.id}-word`, pair: word.id, kind: "word", content: word.es }
+      ]));
+      state.memoryOpen = [];
+      state.memoryPairs = 0;
+      state.memoryMoves = 0;
+      state.memoryLocked = false;
+      document.getElementById("memoryDone").hidden = true;
+      renderMemory();
+    }
+
+    function renderMemory() {
+      const grid = document.getElementById("memoryGrid");
+      grid.innerHTML = state.memoryCards.map(card => `
+        <button class="memory-card" type="button" data-key="${card.key}" aria-label="Abrir tarjeta">
+          <span class="memory-inner">
+            <span class="memory-front" aria-hidden="true">?</span>
+            <span class="memory-back ${card.kind === "picture" ? "picture-only" : ""}">${card.content}</span>
+          </span>
+        </button>
+      `).join("");
+      grid.querySelectorAll(".memory-card").forEach(button => button.addEventListener("click", () => flipMemory(button)));
+      updateMemoryStats();
+    }
+
+    function flipMemory(button) {
+      if (state.memoryLocked || button.classList.contains("matched") || button.classList.contains("flipped")) return;
+      button.classList.add("flipped");
+      state.memoryOpen.push(button);
+      if (state.memoryOpen.length < 2) return;
+
+      state.memoryLocked = true;
+      state.memoryMoves += 1;
+      const [first, second] = state.memoryOpen;
+      const firstCard = state.memoryCards.find(card => card.key === first.dataset.key);
+      const secondCard = state.memoryCards.find(card => card.key === second.dataset.key);
+      const match = firstCard.pair === secondCard.pair && firstCard.kind !== secondCard.kind;
+
+      window.setTimeout(() => {
+        if (match) {
+          first.classList.add("matched");
+          second.classList.add("matched");
+          state.memoryPairs += 1;
+        } else {
+          first.classList.remove("flipped");
+          second.classList.remove("flipped");
+        }
+        state.memoryOpen = [];
+        state.memoryLocked = false;
+        updateMemoryStats();
+        if (state.memoryPairs === 6) finishMemory();
+      }, match ? 500 : 780);
+    }
+
+    function updateMemoryStats() {
+      document.getElementById("pairsStat").textContent = `${state.memoryPairs} / 6 pares`;
+      document.getElementById("movesStat").textContent = `${state.memoryMoves} intentos`;
+    }
+
+    function finishMemory() {
+      const done = document.getElementById("memoryDone");
+      done.hidden = false;
+      done.innerHTML = `
+        🎉 ¡Muy bien! • Kjempebra! • Hui bures!<br>
+        <button class="primary" type="button" id="restartMemory">Otra ronda • Ny runde • Ođđa vuorru</button>
+      `;
+      document.getElementById("restartMemory").addEventListener("click", startMemory);
+    }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => switchView(tab.dataset.view));
+    });
+
+    renderFilters();
+    renderWords();
+  </script>
+</body>
+</html>
